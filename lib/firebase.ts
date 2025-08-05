@@ -3,6 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 
 //Firebase Console → 「設定アイコン」→「プロジェクトの設定」→「ウェブアプリを追加」で取得した設定
+console.log("✅ APIキー:", process.env.NEXT_PUBLIC_API_KEY);
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
