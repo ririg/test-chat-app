@@ -38,6 +38,8 @@ export default function ChatPage() {
     try {
       const userMessage = input.trim();
 
+      // ユーザーメッセージをFirestoreに保存
+      // Cloud Functionsが自動的にBot返信を生成します
       await addDoc(collection(db, 'messages'), {
         text: userMessage,
         createdAt: serverTimestamp(),
@@ -45,18 +47,6 @@ export default function ChatPage() {
       });
 
       setInput('');
-
-      setTimeout(async () => {
-        try {
-          await addDoc(collection(db, 'messages'), {
-            text: `🤖 Bot: 「${userMessage}」に対する自動返信です！`,
-            createdAt: serverTimestamp(),
-            uid: 'bot',
-          });
-        } catch (error) {
-          console.error('❌ Botの返信エラー:', error);
-        }
-      }, 2000);
     } catch (error) {
       console.error('メッセージ送信エラー:', error);
     }

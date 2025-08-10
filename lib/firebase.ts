@@ -1,9 +1,7 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore';
 
-//Firebase Console → 「設定アイコン」→「プロジェクトの設定」→「ウェブアプリを追加」で取得した設定
-console.log("✅ APIキー:", process.env.NEXT_PUBLIC_API_KEY);
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -13,8 +11,19 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
-// 再初期化を防止
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+export const db = typeof window !== 'undefined'
+  ? initializeFirestore(app, { experimentalAutoDetectLongPolling: true })
+  : getFirestore(app);
+
+const isLocalEmulator =
+  typeof window !== 'undefined' &&
+  ([ 'localhost', '127.0.0.1', '::1' ].includes(window.location.hostname) || process.env.NEXT_PUBLIC_USE_EMULATORS === 'true');
+
+if (isLocalEmulator) {
+  try { connectFirestoreEmulator(db, 'localhost', 8085); } catch {}
+  try { connectFirestoreEmulator(db, '127.0.0.1', 8085); } catch {}
+}
